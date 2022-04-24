@@ -1,14 +1,15 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import * as monaco from "monaco-editor";
+import { CommandsRegistry } from "monaco-editor/esm/vs/platform/commands/common/commands";
 import debounce from "debounce";
+import { registerDocumentFormattingEditProviders } from "./format";
 
 window.MonacoEnvironment = {
   getWorkerUrl: (_moduleId, label) => {
     const v = `?v=${
       require("monaco-editor/package.json?fields=version").version
     }`;
-    if (label === "css" || label === "tailwindcss")
-      return `/_next/static/css.worker.js${v}`;
+    if (label === "css") return `/_next/static/css.worker.js${v}`;
     if (label === "html") return `/_next/static/html.worker.js${v}`;
     if (label === "typescript" || label === "javascript")
       return `/_next/static/ts.worker.js${v}`;
@@ -16,8 +17,24 @@ window.MonacoEnvironment = {
   },
 };
 
+function setupKeybindings(editor) {
+  let formatCommandId = "editor.action.formatDocument";
+  editor._standaloneKeybindingService.addDynamicKeybinding(
+    `-${formatCommandId}`,
+    null,
+    () => {}
+  );
+  const { handler, when } = CommandsRegistry.getCommand(formatCommandId);
+  editor._standaloneKeybindingService.addDynamicKeybinding(
+    formatCommandId,
+    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+    handler,
+    when
+  );
+}
+registerDocumentFormattingEditProviders();
+
 const Editor = ({ language, value, onChange }) => {
-  console.log(value);
   const divEl = useRef(null);
   const editor = useRef(null);
 
@@ -31,6 +48,8 @@ const Editor = ({ language, value, onChange }) => {
         language,
       });
     }
+
+    setupKeybindings(editor.current);
     editor.current.onDidChangeModelContent(() => {
       //console.log(editor.current.getValue());
       handleChange(editor.current.getValue());

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Editor } from "../../components/Editor";
 import Preview from "../../components/Preview";
+import Header from "../../components/header";
 import SplitPane from "react-split-pane";
 import Worker from "worker-loader!../../workers/compile.worker.js";
 import { requestResponse } from "../../utils/workers";
@@ -48,7 +49,7 @@ const initialContent = {
     ReactDOM.render(<App />, document.getElementById('app'))
     
     `,
-    language: "typescript",
+    language: "javascript",
     transformer: "react",
   },
 };
@@ -124,9 +125,7 @@ export default function Pen() {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="h-16 flex-none bg-[#181818] border-b border-gray-700">
-        111
-      </div>
+      <Header></Header>
 
       <div className="flex-auto flex relative">
         <SplitPane defaultSize="50%" split="vertical">

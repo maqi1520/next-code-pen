@@ -20,7 +20,7 @@ addEventListener("message", async (event) => {
   let css;
   let html;
 
-  console.log(event.data.script);
+  console.log(event.data);
 
   try {
     if (event.data.script) {
@@ -32,7 +32,7 @@ addEventListener("message", async (event) => {
     if (event.data.css) {
       css = event.data.css.value;
     }
-    if (event.data.script) {
+    if (event.data.html) {
       html = event.data.html.value;
     }
 

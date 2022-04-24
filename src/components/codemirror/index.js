@@ -19,27 +19,24 @@ const modeToDoc = {
 };
 
 export default function EditorMobile({
-  initialContent,
+  language,
+  value,
   onChange,
-  activeTab,
   editorRef: inRef,
 }) {
   const ref = useRef();
   const cmRef = useRef();
-  const content = useRef(initialContent);
-  const history = useRef({});
   const [i, setI] = useState(0);
   const skipNextOnChange = useRef(true);
-  const initial = useRef(true);
 
   useEffect(() => {
     cmRef.current = CodeMirror(ref.current, {
-      value: initialContent[activeTab],
-      mode: docToMode[activeTab],
+      value,
+      mode: docToMode[language],
       lineNumbers: true,
       viewportMargin: Infinity,
       tabSize: 2,
-      theme: getTheme(),
+      theme: "dark",
       addModeClass: true,
     });
     typeof inRef === "function" &&
@@ -51,46 +48,18 @@ export default function EditorMobile({
   }, []);
 
   useEffect(() => {
-    if (initial.current) {
-      initial.current = false;
-      return;
-    }
-    content.current = initialContent;
-    history.current = {};
-    cmRef.current.setValue(initialContent[activeTab]);
-    cmRef.current.clearHistory();
-  }, [initialContent]);
-
-  useEffect(() => {
     function handleChange() {
-      content.current[activeTab] = cmRef.current.getValue();
-      if (skipNextOnChange.current) {
-        skipNextOnChange.current = false;
-      } else {
-        console.log("---", content.current);
-        onChange(activeTab, content.current);
-      }
+      onChange(cmRef.current.getValue());
     }
     cmRef.current.on("change", handleChange);
     return () => {
       cmRef.current.off("change", handleChange);
     };
-  }, [activeTab, onChange]);
+  }, [onChange]);
 
   useEffect(() => {
-    history.current[modeToDoc[cmRef.current.getOption("mode")]] =
-      cmRef.current.getHistory();
-
-    skipNextOnChange.current = true;
-    cmRef.current.setValue(content.current[activeTab]);
-    cmRef.current.setOption("mode", docToMode[activeTab]);
-    if (history.current[activeTab]) {
-      cmRef.current.setHistory(history.current[activeTab]);
-    } else {
-      cmRef.current.clearHistory();
-    }
-    setI((i) => i + 1);
-  }, [activeTab]);
+    cmRef.current.setOption("mode", docToMode[language]);
+  }, [language]);
 
   useIsomorphicLayoutEffect(() => {
     if (!cmRef.current) return;

@@ -2,7 +2,10 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const path = require("path");
 
 module.exports = {
-  webpack: (config) => {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  webpack: (config, { isServer, webpack, dev }) => {
     config.module.rules
       .filter((rule) => rule.oneOf)
       .forEach((rule) => {
@@ -24,21 +27,24 @@ module.exports = {
         });
       });
 
-    config.plugins.push(
-      new MonacoWebpackPlugin({
-        languages: [
-          "json",
-          "markdown",
-          "css",
-          "typescript",
-          "javascript",
-          "html",
-          "scss",
-          "less",
-        ],
-        filename: "static/[name].worker.js",
-      })
-    );
+    config.output.globalObject = "self";
+    if (!isServer) {
+      config.plugins.push(
+        new MonacoWebpackPlugin({
+          languages: [
+            "json",
+            "markdown",
+            "css",
+            "typescript",
+            "javascript",
+            "html",
+            "scss",
+            "less",
+          ],
+          filename: "static/[name].worker.js",
+        })
+      );
+    }
     return config;
   },
 };

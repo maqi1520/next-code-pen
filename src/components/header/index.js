@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function Header() {
+export default function Header({ children }) {
   return (
-    <div className="h-16 flex-none bg-[#181818] border-b border-gray-700 ">
+    <div className="h-16 flex-none bg-[#181818] border-b border-gray-700 flex justify-between">
       <div className="flex justify-center items-center h-16 w-28">
         <svg
           className="w-10 h-10"
@@ -29,6 +29,7 @@ export default function Header() {
 
         <span className="ml2 text-gray-50">CODE</span>
       </div>
+      <div className="w-28">{children}</div>
     </div>
   );
 }

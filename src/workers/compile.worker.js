@@ -16,38 +16,39 @@ addEventListener("message", async (event) => {
     }, 0);
   }
 
-  let script;
+  let js;
   let css;
   let html;
 
   console.log(event.data);
 
-  try {
-    if (event.data.script) {
-      const res = Babel.transform(event.data.script.value, {
-        presets: [event.data.script.transformer],
+  if (event.data.js) {
+    if (event.data.jsLang === "javascript") {
+      js = event.data.js;
+    }
+    if (event.data.jsLang === "babel") {
+      const res = Babel.transform(event.data.js, {
+        presets: ["react"],
       });
-      script = res.code;
+      js = res.code;
     }
-    if (event.data.css) {
-      css = event.data.css.value;
+    if (event.data.jsLang === "typescript") {
+      const res = Babel.transform(event.data.js, {
+        presets: ["typescript"],
+      });
+      js = res.code;
     }
-    if (event.data.html) {
-      html = event.data.html.value;
-    }
-
-    respond({
-      css,
-      html,
-      script,
-    });
-  } catch (error) {
-    console.log(error);
-    respond({
-      error: {
-        message: error,
-        file: "JS",
-      },
-    });
   }
+  if (event.data.css) {
+    css = event.data.css;
+  }
+  if (event.data.html) {
+    html = event.data.html;
+  }
+
+  respond({
+    css,
+    html,
+    js,
+  });
 });

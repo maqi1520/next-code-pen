@@ -1,8 +1,15 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { CommandsRegistry } from "monaco-editor/esm/vs/platform/commands/common/commands";
 import debounce from "debounce";
 import { registerDocumentFormattingEditProviders } from "./format";
+import {
+  setupTsxMode,
+  setupHtmlMode,
+  setupCssMode,
+  setupJavascriptMode,
+  setupTypescriptMode,
+} from "./setupTsxMode";
 
 window.MonacoEnvironment = {
   getWorkerUrl: (_moduleId, label) => {
@@ -34,6 +41,15 @@ function setupKeybindings(editor) {
 }
 registerDocumentFormattingEditProviders();
 
+const modes = {
+  html: setupHtmlMode,
+  css: setupCssMode,
+  javascript: setupJavascriptMode,
+  babel: setupJavascriptMode,
+  typescript: setupTypescriptMode,
+  typescriptreact: setupTsxMode,
+};
+
 const Editor = ({ language, value, onChange }) => {
   const divEl = useRef(null);
   const editor = useRef(null);
@@ -42,10 +58,8 @@ const Editor = ({ language, value, onChange }) => {
   useEffect(() => {
     if (divEl.current) {
       editor.current = monaco.editor.create(divEl.current, {
-        value,
         minimap: { enabled: false },
         theme: "vs-dark",
-        language,
       });
     }
 
@@ -56,8 +70,22 @@ const Editor = ({ language, value, onChange }) => {
     });
     return () => {
       editor.current.dispose();
+      const model = editor.current.getModel();
+      if (model) {
+        model.dispose();
+      }
     };
   }, [handleChange]);
+
+  useEffect(() => {
+    const model = editor.current.getModel();
+    model.dispose();
+    editor.current.setModel(modes[language](value));
+  }, [language, value]);
+
+  useEffect(() => {
+    editor.current.setValue(value);
+  }, [value]);
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -72,4 +100,4 @@ const Editor = ({ language, value, onChange }) => {
   return <div className="relative flex-auto" ref={divEl}></div>;
 };
 
-export default React.memo(Editor);
+export default Editor;

@@ -1,28 +1,7 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { CommandsRegistry } from "monaco-editor/esm/vs/platform/commands/common/commands";
-import debounce from "debounce";
 import { registerDocumentFormattingEditProviders } from "./format";
-import {
-  setupTsxMode,
-  setupHtmlMode,
-  setupCssMode,
-  setupJavascriptMode,
-  setupTypescriptMode,
-} from "./setupTsxMode";
-
-window.MonacoEnvironment = {
-  getWorkerUrl: (_moduleId, label) => {
-    const v = `?v=${
-      require("monaco-editor/package.json?fields=version").version
-    }`;
-    if (label === "css") return `/_next/static/css.worker.js${v}`;
-    if (label === "html") return `/_next/static/html.worker.js${v}`;
-    if (label === "typescript" || label === "javascript")
-      return `/_next/static/ts.worker.js${v}`;
-    return `/_next/static/editor.worker.js${v}`;
-  },
-};
 
 function setupKeybindings(editor) {
   let formatCommandId = "editor.action.formatDocument";
@@ -41,20 +20,20 @@ function setupKeybindings(editor) {
 }
 registerDocumentFormattingEditProviders();
 
-const modes = {
-  html: setupHtmlMode,
-  css: setupCssMode,
-  javascript: setupJavascriptMode,
-  babel: setupJavascriptMode,
-  typescript: setupTypescriptMode,
-  typescriptreact: setupTsxMode,
+const languageToMode = {
+  html: "html",
+  css: "css",
+  less: "less",
+  sass: "sass",
+  javascript: "javascript",
+  babel: "javascript",
+  typescript: "typescript",
 };
 
 const Editor = ({ language, value, onChange }) => {
   const divEl = useRef(null);
   const editor = useRef(null);
 
-  const handleChange = useCallback(debounce(onChange, 200), []);
   useEffect(() => {
     if (divEl.current) {
       editor.current = monaco.editor.create(divEl.current, {
@@ -64,28 +43,26 @@ const Editor = ({ language, value, onChange }) => {
     }
 
     setupKeybindings(editor.current);
-    editor.current.onDidChangeModelContent(() => {
-      //console.log(editor.current.getValue());
-      handleChange(editor.current.getValue());
-    });
+
     return () => {
       editor.current.dispose();
-      const model = editor.current.getModel();
-      if (model) {
-        model.dispose();
-      }
     };
-  }, [handleChange]);
+  }, []);
 
   useEffect(() => {
     const model = editor.current.getModel();
-    model.dispose();
-    editor.current.setModel(modes[language](value));
-  }, [language, value]);
+    monaco.editor.setModelLanguage(model, languageToMode[language]);
+  }, [language]);
 
   useEffect(() => {
     editor.current.setValue(value);
   }, [value]);
+
+  useEffect(() => {
+    editor.current.onDidChangeModelContent(() => {
+      onChange(editor.current.getValue());
+    });
+  }, [onChange]);
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {

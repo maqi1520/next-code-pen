@@ -62,7 +62,16 @@
         const script = document.getElementById("_script");
         const newScript = document.createElement("script");
         newScript.id = "_script";
-        newScript.innerHTML = typeof js === "undefined" ? "" : js;
+        newScript.innerHTML =
+          typeof js === "undefined"
+            ? ""
+            : `try {
+          ${js}
+        } catch (err) {
+          console.error('js代码运行出错')
+          console.error(err)
+        }
+    `;
 
         if (script) {
           script.parentNode.replaceChild(newScript, script);

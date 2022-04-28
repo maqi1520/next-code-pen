@@ -57,8 +57,6 @@ function Pen() {
     previewRef.current.contentWindow.postMessage(content, "*");
   };
 
-  console.log(jsLang);
-
   const compileNow = async (content) => {
     console.log(jsLang);
     let { canceled, error, ...other } = await requestResponse(worker.current, {
@@ -91,13 +89,7 @@ function Pen() {
   };
   const handleChangeJs = (value) => {
     compileNow({
-      js: `try {
-          ${value}
-        } catch (err) {
-          console.error('js代码运行出错')
-          console.error(err)
-        }
-    `,
+      js: value,
     });
   };
 

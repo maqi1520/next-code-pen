@@ -8,7 +8,7 @@ export function setupTsxMode(content) {
     modelUri
   );
 
-  // Important Bit #3: Tell typescript to use 'react' for jsx files.
+  //  设置typescript 使用jsx 的编译方式
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     jsx: "react",
   });

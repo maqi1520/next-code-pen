@@ -16,6 +16,16 @@ const options = {
     plugins: [await import("prettier/parser-postcss")],
     printWidth: 100,
   }),
+  less: async () => ({
+    parser: "less",
+    plugins: [await import("prettier/parser-postcss")],
+    printWidth: 100,
+  }),
+  scss: async () => ({
+    parser: "scss",
+    plugins: [await import("prettier/parser-postcss")],
+    printWidth: 100,
+  }),
   javascript: async () => ({
     parser: "babel",
     plugins: [await import("prettier/parser-babel")],

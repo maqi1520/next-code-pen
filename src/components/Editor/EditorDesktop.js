@@ -24,7 +24,7 @@ const languageToMode = {
   html: "html",
   css: "css",
   less: "less",
-  sass: "sass",
+  scss: "scss",
   javascript: "javascript",
   babel: "javascript",
   typescript: "typescript",

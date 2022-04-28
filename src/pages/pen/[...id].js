@@ -133,7 +133,7 @@ function Pen() {
             <Select
               value={cssLang}
               onChange={setCssLang}
-              options={["css", "less", "sass"]}
+              options={["css", "less", "scss"]}
             />
           </div>
           <Editor

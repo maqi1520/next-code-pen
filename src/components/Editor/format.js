@@ -49,6 +49,20 @@ export function registerDocumentFormattingEditProviders() {
       formattingEditProvider
     )
   );
+
+  disposables.push(
+    monaco.languages.registerDocumentFormattingEditProvider(
+      "less",
+      formattingEditProvider
+    )
+  );
+
+  disposables.push(
+    monaco.languages.registerDocumentFormattingEditProvider(
+      "scss",
+      formattingEditProvider
+    )
+  );
   disposables.push(
     monaco.languages.registerDocumentFormattingEditProvider(
       "javascript",

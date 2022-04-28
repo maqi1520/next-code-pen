@@ -1,4 +1,7 @@
 import * as Babel from "@babel/standalone";
+import Less from "less/lib/less";
+const less = Less();
+less.PluginLoader = function () {};
 
 let current;
 
@@ -20,8 +23,6 @@ addEventListener("message", async (event) => {
   let css;
   let html;
 
-  console.log(event.data);
-
   if (event.data.js) {
     if (event.data.jsLang === "javascript") {
       js = event.data.js;
@@ -40,7 +41,12 @@ addEventListener("message", async (event) => {
     }
   }
   if (event.data.css) {
-    css = event.data.css;
+    if (event.data.cssLang === "css") {
+      css = event.data.css;
+    }
+    if (event.data.cssLang === "less") {
+      css = await less.render(event.data.css).then((res) => res.css);
+    }
   }
   if (event.data.html) {
     html = event.data.html;

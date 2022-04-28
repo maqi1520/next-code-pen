@@ -5,19 +5,36 @@ import Header from "../../components/header";
 import LayoutSwitch from "../../components/header/LayoutSwitch";
 import Select from "../../components/select";
 import SplitPane from "react-split-pane";
+import debounce from "debounce";
 import Worker from "worker-loader!../../workers/compile.worker.js";
 import { requestResponse } from "../../utils/workers";
 import { useLocalStorage } from "react-use";
+
+import Sass from "sass.js/dist/sass";
+Sass.setWorkerUrl("/vendor/sass.worker.js");
+
+function compoleScss(code) {
+  const sass = new Sass();
+  return new Promise((resolve, reject) => {
+    sass.compile(code, (result) => {
+      if (result.status === 0) return resolve(result.text);
+      reject(new Error(result.formatted));
+    });
+  });
+}
+
 function Pen() {
   const [htmlLang, setHtmlLang] = useLocalStorage("htmlLang", "html");
   const [cssLang, setCssLang] = useLocalStorage("cssLang", "css");
   const [jsLang, setJsLang] = useLocalStorage("jsLang", "babel");
   const [html, setHtml] = useLocalStorage("html", `<div id="app"></div>`);
   const [css, setCss] = useLocalStorage(
-    "css",
-    `body{
-    color:red;
-  }`
+    "scss",
+    `$color:red;
+
+    body{
+        color:$color;
+      }`
   );
   const [js, setJs] = useLocalStorage(
     "js",
@@ -53,12 +70,10 @@ function Pen() {
   }, []);
 
   const inject = async (content) => {
-    console.log(content);
     previewRef.current.contentWindow.postMessage(content, "*");
   };
 
   const compileNow = async (content) => {
-    console.log(jsLang);
     let { canceled, error, ...other } = await requestResponse(worker.current, {
       html,
       css,
@@ -68,6 +83,13 @@ function Pen() {
       jsLang,
       ...content,
     });
+    if (cssLang === "scss") {
+      try {
+        other.css = await compoleScss(content.css);
+      } catch (error) {
+        other.css = undefined;
+      }
+    }
 
     if (canceled) {
       return;
@@ -76,19 +98,21 @@ function Pen() {
     inject(other);
   };
 
+  const compile = useCallback(debounce(compileNow, 800), []);
+
   const handleChangeHtml = (value) => {
-    compileNow({
+    compile({
       html: value,
     });
   };
 
   const handleChangeCss = (value) => {
-    compileNow({
+    compile({
       css: value,
     });
   };
   const handleChangeJs = (value) => {
-    compileNow({
+    compile({
       js: value,
     });
   };

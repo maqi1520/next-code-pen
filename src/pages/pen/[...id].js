@@ -101,17 +101,20 @@ function Pen() {
   const compile = useCallback(debounce(compileNow, 800), []);
 
   const handleChangeHtml = (value) => {
+    setHtml(value);
     compile({
       html: value,
     });
   };
 
   const handleChangeCss = (value) => {
+    setCss(value);
     compile({
       css: value,
     });
   };
   const handleChangeJs = (value) => {
+    setJs(value);
     compile({
       js: value,
     });

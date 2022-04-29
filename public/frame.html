@@ -33,7 +33,7 @@
         checkVisibility();
       });
       function checkVisibility() {
-        if ((!visible && hasHtml) || hasCss) {
+        if ((!visible && hasHtml) || hasCss || hasjs) {
           visible = true;
           document.body.style.display = "";
         } else if (visible && (!hasHtml || !hasCss)) {
@@ -79,7 +79,7 @@
           document.body.appendChild(newScript);
         }
 
-        hasJS = typeof js === "undefined" ? false : true;
+        hasjs = typeof js === "undefined" ? false : true;
       }
     </script>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>

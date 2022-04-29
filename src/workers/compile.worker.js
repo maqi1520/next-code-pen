@@ -35,6 +35,7 @@ addEventListener("message", async (event) => {
     }
     if (event.data.jsLang === "typescript") {
       const res = Babel.transform(event.data.js, {
+        filename: "index.ts",
         presets: ["typescript"],
       });
       js = res.code;

@@ -25,50 +25,29 @@ export function registerDocumentFormattingEditProviders() {
     },
   };
 
-  // override the built-in HTML formatter
-  const _registerDocumentFormattingEditProvider =
-    monaco.languages.registerDocumentFormattingEditProvider;
-  monaco.languages.registerDocumentFormattingEditProvider = (id, provider) => {
-    if (id !== "html") {
-      return _registerDocumentFormattingEditProvider(id, provider);
-    }
-    return _registerDocumentFormattingEditProvider(
-      "html",
-      formattingEditProvider
+  // // override the built-in HTML formatter
+  // const _registerDocumentFormattingEditProvider =
+  //   monaco.languages.registerDocumentFormattingEditProvider;
+  // monaco.languages.registerDocumentFormattingEditProvider = (id, provider) => {
+  //   if ((['css','less','scss','javascript','typescript','html'].includes(id))) {
+  //     return _registerDocumentFormattingEditProvider(
+  //      ,
+  //       formattingEditProvider
+  //     );
+
+  //   }else{
+  //     return _registerDocumentFormattingEditProvider(id, provider);
+  //   }
+
+  // };
+  ["css", "less", "scss", "javascript", "typescript", "html"].forEach((id) => {
+    disposables.push(
+      monaco.languages.registerDocumentFormattingEditProvider(
+        id,
+        formattingEditProvider
+      )
     );
-  };
-  disposables.push(
-    monaco.languages.registerDocumentFormattingEditProvider(
-      "markdown",
-      formattingEditProvider
-    )
-  );
-  disposables.push(
-    monaco.languages.registerDocumentFormattingEditProvider(
-      "css",
-      formattingEditProvider
-    )
-  );
-
-  disposables.push(
-    monaco.languages.registerDocumentFormattingEditProvider(
-      "less",
-      formattingEditProvider
-    )
-  );
-
-  disposables.push(
-    monaco.languages.registerDocumentFormattingEditProvider(
-      "scss",
-      formattingEditProvider
-    )
-  );
-  disposables.push(
-    monaco.languages.registerDocumentFormattingEditProvider(
-      "javascript",
-      formattingEditProvider
-    )
-  );
+  });
 
   return {
     dispose() {

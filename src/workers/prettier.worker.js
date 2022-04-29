@@ -6,10 +6,10 @@ const options = {
     plugins: [await import("prettier/parser-html")],
     printWidth: 100,
   }),
-  markdown: async () => ({
-    parser: "markdown",
-    plugins: [await import("prettier/parser-markdown")],
-    printWidth: 10000,
+  typescript: async () => ({
+    parser: "typescript",
+    plugins: [await import("prettier/parser-typescript")],
+    printWidth: 100,
   }),
   css: async () => ({
     parser: "css",

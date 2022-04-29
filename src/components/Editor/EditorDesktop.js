@@ -5,11 +5,6 @@ import { registerDocumentFormattingEditProviders } from "./format";
 
 function setupKeybindings(editor) {
   let formatCommandId = "editor.action.formatDocument";
-  editor._standaloneKeybindingService.addDynamicKeybinding(
-    `-${formatCommandId}`,
-    null,
-    () => {}
-  );
   const { handler, when } = CommandsRegistry.getCommand(formatCommandId);
   editor._standaloneKeybindingService.addDynamicKeybinding(
     formatCommandId,

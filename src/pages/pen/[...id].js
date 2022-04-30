@@ -13,7 +13,7 @@ import { useLocalStorage } from "react-use";
 import Sass from "sass.js/dist/sass";
 Sass.setWorkerUrl("/vendor/sass.worker.js");
 
-function compoleScss(code) {
+function compileScss(code) {
   const sass = new Sass();
   return new Promise((resolve, reject) => {
     sass.compile(code, (result) => {
@@ -85,7 +85,7 @@ function Pen() {
     });
     if (cssLang === "scss") {
       try {
-        other.css = await compoleScss(content.css);
+        other.css = await compileScss(content.css);
       } catch (error) {
         other.css = undefined;
       }
@@ -138,7 +138,7 @@ function Pen() {
           HTML
         </div>
         <Editor
-          value={html}
+          defaultValue={html}
           onChange={handleChangeHtml}
           language={htmlLang}
         ></Editor>
@@ -164,7 +164,7 @@ function Pen() {
             />
           </div>
           <Editor
-            value={css}
+            defaultValue={css}
             onChange={handleChangeCss}
             language={cssLang}
           ></Editor>
@@ -186,7 +186,7 @@ function Pen() {
             />
           </div>
           <Editor
-            value={js}
+            defaultValue={js}
             onChange={handleChangeJs}
             language={jsLang}
           ></Editor>

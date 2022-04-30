@@ -25,7 +25,7 @@ const languageToMode = {
   typescript: "typescript",
 };
 
-const Editor = ({ language, value, onChange }) => {
+const Editor = ({ language, defaultValue, value, onChange }) => {
   const divEl = useRef(null);
   const editor = useRef(null);
 
@@ -50,7 +50,15 @@ const Editor = ({ language, value, onChange }) => {
   }, [language]);
 
   useEffect(() => {
-    editor.current.setValue(value);
+    if (defaultValue) {
+      editor.current.setValue(defaultValue);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (value) {
+      editor.current.setValue(value);
+    }
   }, [value]);
 
   useEffect(() => {

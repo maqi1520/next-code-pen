@@ -29,7 +29,7 @@ export default function Header({ children }) {
 
         <span className="ml2 text-gray-50">CODE</span>
       </div>
-      <div className="w-28">{children}</div>
+      <div className="flex-auto flex items-center justify-end">{children}</div>
     </div>
   );
 }

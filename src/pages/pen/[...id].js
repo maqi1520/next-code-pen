@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import Error from "next/error";
 import { Editor } from "../../components/Editor";
 import Preview from "../../components/Preview";
 import Header from "../../components/header";
@@ -8,56 +9,32 @@ import SplitPane from "react-split-pane";
 import debounce from "debounce";
 import Worker from "worker-loader!../../workers/compile.worker.js";
 import { requestResponse } from "../../utils/workers";
-import { useLocalStorage } from "react-use";
+import { compileScss } from "../../utils/compile";
+import { get } from "../../utils/database";
+import Modal from "../../components/setting/Modal";
+import SaveBtn from "../../components/header/SaveBtn";
 
-import Sass from "sass.js/dist/sass";
-Sass.setWorkerUrl("/vendor/sass.worker.js");
+function Pen({
+  id = "",
+  initialContent = {
+    html: "",
+    css: "",
+    js: "",
+    scripts: [],
+    styles: [],
+    cssLang: "css",
+    jsLang: "babel",
+    htmlLang: "html",
+  },
+}) {
+  const [state, setState] = useState(initialContent);
+  const { html, htmlLang, css, cssLang, js, jsLang, name, styles, scripts } =
+    state;
+  const setCssLang = (cssLang) => setState((prev) => ({ ...prev, cssLang }));
+  const setJsLang = (jsLang) => setState((prev) => ({ ...prev, jsLang }));
+  const setHtmlLang = (htmlLang) => setState((prev) => ({ ...prev, htmlLang }));
+  const setBase = (base) => setState((prev) => ({ ...prev, ...base }));
 
-function compileScss(code) {
-  const sass = new Sass();
-  return new Promise((resolve, reject) => {
-    sass.compile(code, (result) => {
-      if (result.status === 0) return resolve(result.text);
-      reject(new Error(result.formatted));
-    });
-  });
-}
-
-function Pen() {
-  const [htmlLang, setHtmlLang] = useLocalStorage("htmlLang", "html");
-  const [cssLang, setCssLang] = useLocalStorage("cssLang", "css");
-  const [jsLang, setJsLang] = useLocalStorage("jsLang", "babel");
-  const [html, setHtml] = useLocalStorage("html", `<div id="app"></div>`);
-  const [css, setCss] = useLocalStorage(
-    "scss",
-    `$color:red;
-
-    body{
-        color:$color;
-      }`
-  );
-  const [js, setJs] = useLocalStorage(
-    "js",
-    `
-  function App() {
-    const [count, setCount] = React.useState(0)
-  
-    const inc = () => setCount(count + 1)
-  
-    const dec = () => setCount(count - 1)
-  
-    return (
-      <div>
-        <h2>{count}</h2>
-        <button onClick={inc}>Increment</button>
-        <button onClick={dec}>Decrement</button>
-      </div>
-    )
-  }
-  
-  ReactDOM.render(<App />, document.getElementById('app'))
-  `
-  );
   const previewRef = useRef();
   const [layout, setLayout] = useState("left");
   const worker = useRef();
@@ -100,25 +77,34 @@ function Pen() {
 
   const compile = useCallback(debounce(compileNow, 800), []);
 
-  const handleChangeHtml = (value) => {
-    setHtml(value);
-    compile({
-      html: value,
-    });
-  };
+  const handleChangeHtml = useCallback(
+    (value) => {
+      setState((prev) => ({ ...prev, html: value }));
+      compile({
+        html: value,
+      });
+    },
+    [compile]
+  );
 
-  const handleChangeCss = (value) => {
-    setCss(value);
-    compile({
-      css: value,
-    });
-  };
-  const handleChangeJs = (value) => {
-    setJs(value);
-    compile({
-      js: value,
-    });
-  };
+  const handleChangeCss = useCallback(
+    (value) => {
+      setState((prev) => ({ ...prev, css: value }));
+      compile({
+        css: value,
+      });
+    },
+    [compile]
+  );
+  const handleChangeJs = useCallback(
+    (value) => {
+      setState((prev) => ({ ...prev, js: value }));
+      compile({
+        js: value,
+      });
+    },
+    [compile]
+  );
 
   const panes = [
     <SplitPane
@@ -196,6 +182,8 @@ function Pen() {
 
     <div key="2" className="bg-red-50 h-full overflow-hidden">
       <Preview
+        styles={styles}
+        scripts={scripts}
         ref={previewRef}
         iframeClassName={""}
         onLoad={() => {
@@ -215,7 +203,14 @@ function Pen() {
   return (
     <div className="h-screen flex flex-col">
       <Header>
+        <Modal
+          name={name}
+          styles={styles}
+          scripts={scripts}
+          onChange={setBase}
+        />
         <LayoutSwitch value={layout} onChange={setLayout} />
+        <SaveBtn data={state}></SaveBtn>
       </Header>
 
       <div className="flex-auto flex relative">
@@ -233,14 +228,60 @@ function Pen() {
   );
 }
 
-export default function Page() {
+export default function Page({ errorCode, ...props }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     setVisible(true);
   }, []);
 
+  if (errorCode) {
+    return <Error statusCode={errorCode} />;
+  }
   if (visible) {
-    return <Pen />;
+    return <Pen {...props} />;
   }
   return null;
+}
+
+export async function getServerSideProps({ params, res, query }) {
+  if (params.id.length !== 1) {
+    return {
+      props: {
+        errorCode: 404,
+      },
+    };
+  }
+  if (params.id && params.id[0] === "create") {
+    res.setHeader(
+      "cache-control",
+      "public, max-age=0, must-revalidate, s-maxage=31536000"
+    );
+    return {
+      props: {},
+    };
+  } else {
+    try {
+      const initialContent = await get({
+        id: params.id[0],
+      });
+
+      res.setHeader(
+        "cache-control",
+        "public, max-age=0, must-revalidate, s-maxage=31536000"
+      );
+
+      return {
+        props: {
+          id: params.id[0],
+          initialContent,
+        },
+      };
+    } catch (error) {
+      return {
+        props: {
+          errorCode: error.status || 500,
+        },
+      };
+    }
+  }
 }

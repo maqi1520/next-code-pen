@@ -9,7 +9,7 @@ export default function LayoutSwitch({ value, onChange }) {
         <>
           <Popover.Button
             className={clsx(
-              "text-white p-2 group rounded inline-flex items-center text-base font-medium hover:bg-[#2f2f2f] focus:outline-none",
+              "text-white px-4 py-2 group rounded inline-flex items-center text-base font-medium hover:bg-[#2f2f2f] focus:outline-none",
               {
                 "bg-[#2f2f2f]": open,
               }

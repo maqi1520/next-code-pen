@@ -35,6 +35,9 @@ const Editor = ({ language, defaultValue, value, onChange }) => {
         minimap: { enabled: false },
         theme: "vs-dark",
       });
+      editor.current.onDidChangeModelContent(() => {
+        onChange(editor.current.getValue());
+      });
     }
 
     setupKeybindings(editor.current);
@@ -60,12 +63,6 @@ const Editor = ({ language, defaultValue, value, onChange }) => {
       editor.current.setValue(value);
     }
   }, [value]);
-
-  useEffect(() => {
-    editor.current.onDidChangeModelContent(() => {
-      onChange(editor.current.getValue());
-    });
-  }, [onChange]);
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {

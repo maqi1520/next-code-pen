@@ -6,7 +6,7 @@ import Header from "../../components/header";
 import LayoutSwitch from "../../components/header/LayoutSwitch";
 import Select from "../../components/select";
 import SplitPane from "react-split-pane";
-import debounce from "debounce";
+import { useDebounce } from "react-use";
 import Worker from "worker-loader!../../workers/compile.worker.js";
 import { requestResponse } from "../../utils/workers";
 import { compileScss } from "../../utils/compile";
@@ -51,16 +51,11 @@ function Pen({
   };
 
   const compileNow = async (content) => {
-    let { canceled, error, ...other } = await requestResponse(worker.current, {
-      html,
-      css,
-      js,
-      htmlLang,
-      cssLang,
-      jsLang,
-      ...content,
-    });
-    if (cssLang === "scss") {
+    let { canceled, error, ...other } = await requestResponse(
+      worker.current,
+      content
+    );
+    if (content.cssLang === "scss") {
       try {
         other.css = await compileScss(content.css);
       } catch (error) {
@@ -75,36 +70,24 @@ function Pen({
     inject(other);
   };
 
-  const compile = useCallback(debounce(compileNow, 800), []);
-
-  const handleChangeHtml = useCallback(
-    (value) => {
-      setState((prev) => ({ ...prev, html: value }));
-      compile({
-        html: value,
-      });
+  const [, cancel] = useDebounce(
+    () => {
+      compileNow(state);
     },
-    [compile]
+    1000,
+    [state]
   );
 
-  const handleChangeCss = useCallback(
-    (value) => {
-      setState((prev) => ({ ...prev, css: value }));
-      compile({
-        css: value,
-      });
-    },
-    [compile]
-  );
-  const handleChangeJs = useCallback(
-    (value) => {
-      setState((prev) => ({ ...prev, js: value }));
-      compile({
-        js: value,
-      });
-    },
-    [compile]
-  );
+  const handleChangeHtml = (value) => {
+    setState((prev) => ({ ...prev, html: value }));
+  };
+
+  const handleChangeCss = (value) => {
+    setState((prev) => ({ ...prev, css: value }));
+  };
+  const handleChangeJs = (value) => {
+    setState((prev) => ({ ...prev, js: value }));
+  };
 
   const panes = [
     <SplitPane
@@ -188,11 +171,6 @@ function Pen({
         iframeClassName={""}
         onLoad={() => {
           inject({
-            html,
-          });
-          compileNow({
-            css,
-            js,
             html,
           });
         }}

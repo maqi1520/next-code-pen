@@ -15,26 +15,28 @@ export default async function handler(req, res) {
     executablePath: await chromium.executablePath,
     headless: chromium.headless,
   });
-  // Create a page with the Open Graph image size best practise
+  // 创建一个页面，并设置视窗大小
   const page = await browser.newPage({
     viewport: {
       width: 1200,
       height: 630,
     },
   });
-  // Generate the full URL out of the given path (GET parameter)
+  // 从url path 拼接成完成路径
   const url = getAbsoluteURL(req.query["path"] || "");
   await page.goto(url, {
     timeout: 15 * 1000,
     waitUntil: "networkidle",
   });
+  await page.waitForTimeout(1000);
+  // 生成png 的缩略图
   const data = await page.screenshot({
     type: "png",
   });
   await browser.close();
-  // Set the s-maxage property which caches the images then on the Vercel edge
+  // 设置图片强缓存
   res.setHeader("Cache-Control", "s-maxage=31536000, stale-while-revalidate");
   res.setHeader("Content-Type", "image/png");
-  // write the image to the response with the specified Content-Type
+  // 设置返回 Content-Type 图片格式
   res.end(data);
 }

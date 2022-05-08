@@ -2,8 +2,10 @@
 import Head from "next/head";
 import Link from "next/link";
 import Header from "../components/header";
+import { list } from "../utils/database";
 
-export default function Home() {
+export default function Home({ data }) {
+  console.log(data);
   return (
     <>
       <Head>
@@ -37,82 +39,27 @@ export default function Home() {
           </Link>
         </div>
         <div className="flex flex-wrap text-slate-400">
-          <div className="xl:w-1/4 md:w-1/2 p-4">
-            <div className="relative flex flex-col-reverse rounded-lg p-6 bg-slate-800 highlight-white/5">
-              <img
-                className="h-40 rounded w-full object-cover object-center mb-6"
-                src="https://dummyimage.com/720x400"
-                alt="content"
-              />
-              <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
-                SUBTITLE
-              </h3>
-              <h2 className="text-lg  font-medium title-font mb-4">
-                Chichen Itza
-              </h2>
-              <p className="leading-relaxed text-base">
-                Fingerstache flexitarian street art 8-bit waistcoat. Distillery
-                hexagon disrupt edison bulbche.
-              </p>
+          {data.map((item) => (
+            <div key={item._id} className="xl:w-1/4 md:w-1/2 p-4">
+              <div className="relative flex flex-col rounded-lg p-6 bg-slate-800 highlight-white/5">
+                <img
+                  className="h-40 rounded w-full object-cover object-center mb-6"
+                  src={`/api/thumbnail?path=/pen/preview/${item._id}`}
+                  alt="content"
+                />
+                <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
+                  react
+                </h3>
+                <h2 className="text-lg  font-medium title-font mb-4">
+                  {item.name || "项目未命名"}
+                </h2>
+                <p className="leading-relaxed text-base">
+                  Fingerstache flexitarian street art 8-bit waistcoat.
+                  Distillery hexagon disrupt edison bulbche.
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="xl:w-1/4 md:w-1/2 p-4">
-            <div className="relative flex flex-col-reverse rounded-lg p-6 bg-slate-800 highlight-white/5">
-              <img
-                className="h-40 rounded w-full object-cover object-center mb-6"
-                src="https://dummyimage.com/721x401"
-                alt="content"
-              />
-              <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
-                SUBTITLE
-              </h3>
-              <h2 className="text-lg  font-medium title-font mb-4">
-                Colosseum Roma
-              </h2>
-              <p className="leading-relaxed text-base">
-                Fingerstache flexitarian street art 8-bit waistcoat. Distillery
-                hexagon disrupt edison bulbche.
-              </p>
-            </div>
-          </div>
-          <div className="xl:w-1/4 md:w-1/2 p-4">
-            <div className="relative flex flex-col-reverse  rounded-lg p-6 bg-slate-800 highlight-white/5">
-              <img
-                className="h-40 rounded w-full object-cover object-center mb-6"
-                src="https://dummyimage.com/722x402"
-                alt="content"
-              />
-              <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
-                SUBTITLE
-              </h3>
-              <h2 className="text-lg  font-medium title-font mb-4">
-                Great Pyramid of Giza
-              </h2>
-              <p className="leading-relaxed text-base">
-                Fingerstache flexitarian street art 8-bit waistcoat. Distillery
-                hexagon disrupt edison bulbche.
-              </p>
-            </div>
-          </div>
-          <div className="xl:w-1/4 md:w-1/2 p-4">
-            <div className="relative flex flex-col-reverse  rounded-lg p-6 bg-slate-800 highlight-white/5">
-              <img
-                className="h-40 rounded w-full object-cover object-center mb-6"
-                src="https://dummyimage.com/723x403"
-                alt="content"
-              />
-              <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
-                SUBTITLE
-              </h3>
-              <h2 className="text-lg  font-medium title-font mb-4">
-                San Francisco
-              </h2>
-              <p className="leading-relaxed text-base">
-                Fingerstache flexitarian street art 8-bit waistcoat. Distillery
-                hexagon disrupt edison bulbche.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
       <footer className="bg-[#181818] border-t border-gray-700 text-gray-400">
@@ -135,4 +82,21 @@ export default function Home() {
       </footer>
     </>
   );
+}
+
+export async function getServerSideProps({ params, res, query }) {
+  try {
+    const result = await list();
+    return {
+      props: {
+        data: result.data,
+      },
+    };
+  } catch (error) {
+    return {
+      props: {
+        errorCode: error.status || 500,
+      },
+    };
+  }
 }

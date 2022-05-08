@@ -18,3 +18,13 @@ export function get({ id }) {
       });
   });
 }
+
+export function list() {
+  return fetch(process.env.NEXT_PUBLIC_API_URL + `/api/pen/query`, {
+    headers: {
+      Accept: "application/json",
+    },
+  }).then((response) => {
+    return response.json();
+  });
+}

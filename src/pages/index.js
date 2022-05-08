@@ -45,7 +45,7 @@ export default function Home({ data }) {
                 <div className="relative flex flex-col rounded-lg p-6 bg-slate-800 highlight-white/5">
                   <img
                     className="h-40 rounded w-full object-cover object-center mb-6"
-                    src={`/api/thumbnail?path=/pen/preview/${item._id}`}
+                    src={`/api/thumbnail?path=/preview/${item._id}`}
                     alt="content"
                   />
                   <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">

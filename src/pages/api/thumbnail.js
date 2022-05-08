@@ -26,6 +26,7 @@ export default async function handler(req, res) {
   const url = getAbsoluteURL(req.query["path"] || "");
   await page.goto(url, {
     timeout: 15 * 1000,
+    waitUntil: "networkidle",
   });
   const data = await page.screenshot({
     type: "png",

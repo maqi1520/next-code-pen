@@ -40,25 +40,27 @@ export default function Home({ data }) {
         </div>
         <div className="flex flex-wrap text-slate-400">
           {data.map((item) => (
-            <div key={item._id} className="xl:w-1/4 md:w-1/2 p-4">
-              <div className="relative flex flex-col rounded-lg p-6 bg-slate-800 highlight-white/5">
-                <img
-                  className="h-40 rounded w-full object-cover object-center mb-6"
-                  src={`/api/thumbnail?path=/pen/preview/${item._id}`}
-                  alt="content"
-                />
-                <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
-                  react
-                </h3>
-                <h2 className="text-lg  font-medium title-font mb-4">
-                  {item.name || "项目未命名"}
-                </h2>
-                <p className="leading-relaxed text-base">
-                  Fingerstache flexitarian street art 8-bit waistcoat.
-                  Distillery hexagon disrupt edison bulbche.
-                </p>
-              </div>
-            </div>
+            <Link key={item._id} href={`/pen/${item._id}`}>
+              <a className="xl:w-1/4 md:w-1/2 p-4">
+                <div className="relative flex flex-col rounded-lg p-6 bg-slate-800 highlight-white/5">
+                  <img
+                    className="h-40 rounded w-full object-cover object-center mb-6"
+                    src={`/api/thumbnail?path=/pen/preview/${item._id}`}
+                    alt="content"
+                  />
+                  <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
+                    react
+                  </h3>
+                  <h2 className="text-lg  font-medium title-font mb-4">
+                    {item.name || "项目未命名"}
+                  </h2>
+                  <p className="leading-relaxed text-base">
+                    Fingerstache flexitarian street art 8-bit waistcoat.
+                    Distillery hexagon disrupt edison bulbche.
+                  </p>
+                </div>
+              </a>
+            </Link>
           ))}
         </div>
       </div>

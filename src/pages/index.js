@@ -3,7 +3,7 @@ import Link from "next/link";
 import Header from "../components/header";
 import { list } from "../utils/database";
 
-export default function Home({ data }) {
+export default function Home({ data, imgList }) {
   return (
     <>
       <Header></Header>
@@ -32,13 +32,13 @@ export default function Home({ data }) {
           </Link>
         </div>
         <div className="flex flex-wrap text-slate-400">
-          {data.map((item) => (
+          {data.map((item, index) => (
             <Link key={item._id} href={`/pen/${item._id}`}>
               <a className="xl:w-1/4 md:w-1/2 p-4">
                 <div className="relative flex flex-col rounded-lg p-6 bg-slate-800 highlight-white/5">
                   <img
                     className="h-40 rounded w-full object-cover object-center mb-6"
-                    src={`/api/thumbnail?path=/preview/${item._id}?t=${item.createTime}`}
+                    src={imgList[index]}
                     alt="content"
                   />
                   <h3 className="tracking-widest text-blue-500 text-xs font-medium title-font">
@@ -82,6 +82,7 @@ export async function getServerSideProps({ params, res, query }) {
     return {
       props: {
         data: result.data,
+        imgList: result.imgList,
       },
     };
   } catch (error) {

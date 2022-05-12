@@ -223,11 +223,11 @@ export default function Page({ errorCode, ...props }) {
         <meta name="twitter:card" content="summary" />
         <meta
           name="twitter:image"
-          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+          content={`https://code.runjs.cool/api/thumbnail?path=/preview/${props._id}`}
         />
         <meta
           property="og:image"
-          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+          content={`https://code.runjs.cool/api/thumbnail?path=/preview/${props._id}`}
         />
       </Head>
       {visible ? <Pen {...props} /> : null}

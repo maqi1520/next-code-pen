@@ -1,9 +1,9 @@
 import "../styles/globals.css";
 import Head from "next/head";
 
-const TITLE = "Code Editor | 一个纯前端的在线代码实时预览工具";
+const TITLE = "Code Editor | 一个纯前端在线代码实时预览工具";
 const DESCRIPTION =
-  "一个纯前端的在线代码实时预览工具,支持 Less Scss JavaScript Typescript";
+  "一个纯前端的在线代码实时预览工具,支持 Less Scss JavaScript Typescript。";
 const FAVICON_VERSION = 1;
 
 function v(href) {
@@ -40,6 +40,13 @@ function MyApp({ Component, pageProps }) {
 
         <title>{TITLE}</title>
         <meta content={DESCRIPTION} name="description" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={TITLE} />
+        <meta property="og:title" content={TITLE} />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta name="twitter:site" content={TITLE} />
+        <meta name="twitter:title" content={TITLE} />
+        <meta name="twitter:description" content={DESCRIPTION} />
       </Head>
       <Component {...pageProps} />
     </>

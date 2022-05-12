@@ -1,11 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import Head from "next/head";
 import Header from "../components/header";
 import { list } from "../utils/database";
 
 export default function Home({ data }) {
   return (
     <>
+      <Head>
+        <meta property="og:url" content={`https://code.runjs.cool`} />
+        <meta name="twitter:card" content="summary" />
+        <meta
+          name="twitter:image"
+          content="https://code.runjs.cool/api/thumbnail?path=/"
+        />
+        <meta
+          property="og:image"
+          content="https://code.runjs.cool/api/thumbnail?path=/"
+        />
+      </Head>
       <Header></Header>
       <div className="container mx-auto pb-5 min-h-fit">
         <div className="p-5 flex">

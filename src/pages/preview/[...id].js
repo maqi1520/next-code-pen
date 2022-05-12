@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import Head from "next/head";
 import Error from "next/error";
 import Preview from "../../components/Preview";
 import Worker from "worker-loader!../../workers/compile.worker.js";
@@ -63,6 +64,18 @@ export default function Page({
   }
   return (
     <div className="h-screen flex flex-col">
+      <Head>
+        <meta property="og:url" content={`https://code.runjs.cool`} />
+        <meta name="twitter:card" content="summary" />
+        <meta
+          name="twitter:image"
+          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+        />
+        <meta
+          property="og:image"
+          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+        />
+      </Head>
       <Preview
         styles={initialContent.styles}
         scripts={initialContent.scripts}

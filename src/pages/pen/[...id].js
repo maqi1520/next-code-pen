@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Error from "next/error";
+import Head from "next/head";
 import { Editor } from "../../components/Editor";
 import Preview from "../../components/Preview";
 import Header from "../../components/header";
@@ -215,10 +216,23 @@ export default function Page({ errorCode, ...props }) {
   if (errorCode) {
     return <Error statusCode={errorCode} />;
   }
-  if (visible) {
-    return <Pen {...props} />;
-  }
-  return null;
+  return (
+    <>
+      <Head>
+        <meta property="og:url" content={`https://code.runjs.cool`} />
+        <meta name="twitter:card" content="summary" />
+        <meta
+          name="twitter:image"
+          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+        />
+        <meta
+          property="og:image"
+          content={`https://code.runjs.cool/api/thumbnail?path=/pen/${props._id}`}
+        />
+      </Head>
+      {visible ? <Pen {...props} /> : null}
+    </>
+  );
 }
 
 export async function getServerSideProps({ params, res, query }) {

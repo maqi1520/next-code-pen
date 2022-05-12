@@ -58,13 +58,11 @@ export default forwardRef(function Preview(
         var hasHtml = false;
         var hasCss = false;
         var hasjs = false;
-        var visible = false;
         var scripts = [];
         window.addEventListener("message", (e) => {
           if (typeof e.data.clear !== "undefined") {
             setHtml();
             setCss();
-            checkVisibility();
             return;
           }
           if (typeof e.data.css !== "undefined") {
@@ -76,17 +74,7 @@ export default forwardRef(function Preview(
           if (typeof e.data.js !== "undefined") {
             setScript(e.data.js);
           }
-          checkVisibility();
         });
-        function checkVisibility() {
-          if ((!visible && hasHtml) || hasCss || hasjs) {
-            visible = true;
-            document.body.style.display = "";
-          } else if (visible && (!hasHtml || !hasCss)) {
-            visible = false;
-            document.body.style.display = "none";
-          }
-        }
         function setHtml(html) {
           if (typeof html === "undefined") {
             document.body.innerHTML = "";
@@ -123,7 +111,7 @@ export default forwardRef(function Preview(
         }
       </script>
     </head>
-    <body style="display: none">${scriptsdom}<script id="_script"></script></body>
+    <body>${scriptsdom}<script id="_script"></script></body>
     <script>
       // https://github.com/sveltejs/svelte-repl/blob/master/src/Output/srcdoc/index.html
       // https://github.com/sveltejs/svelte-repl/blob/master/LICENSE

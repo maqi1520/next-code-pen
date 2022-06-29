@@ -11,7 +11,7 @@ export function get({ id }) {
 }
 
 export function list() {
-  return fetch(process.env.NEXT_PUBLIC_API_URL + `/api/pen/query`, {
+  return fetch(process.env.NEXT_PUBLIC_API_URL + `/api/pen`, {
     headers: {
       Accept: "application/json",
     },
